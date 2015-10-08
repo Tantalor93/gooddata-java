@@ -88,22 +88,6 @@ public class ProjectServiceAT extends AbstractGoodDataAT {
         assertThat(results.getResults(), is(notNullValue()));
     }
 
-    @Test(groups = "project", dependsOnMethods = "getProjectFeatureFlag")
-    public void updateProjectFeatureFlag() throws Exception {
-        final ProjectFeatureFlag featureFlag =
-                gd.getProjectService().getFeatureFlag(project, PROJECT_FEATURE_FLAG);
-
-        // disable (update) feature flag
-        featureFlag.setEnabled(false);
-        final ProjectFeatureFlag disabledFlag = gd.getProjectService().updateFeatureFlag(featureFlag);
-        checkFeatureFlag(disabledFlag, false);
-
-        // enable again
-        featureFlag.setEnabled(true);
-        final ProjectFeatureFlag enabledFlag = gd.getProjectService().updateFeatureFlag(featureFlag);
-        checkFeatureFlag(enabledFlag, true);
-    }
-
     @Test(groups = "project", dependsOnMethods = "createProjectFeatureFlag")
     public void deleteProjectFeatureFlag() throws Exception {
         final ProjectFeatureFlag featureFlag =
@@ -117,12 +101,6 @@ public class ProjectServiceAT extends AbstractGoodDataAT {
         } catch (GoodDataRestException e) {
             assertThat(e.getStatusCode(), is(HttpStatus.NOT_FOUND.value()));
         }
-    }
-
-    private void checkFeatureFlag(ProjectFeatureFlag featureFlag, boolean expectedValue) {
-        assertThat(featureFlag, is(notNullValue()));
-        assertThat(featureFlag.getName(), is(PROJECT_FEATURE_FLAG));
-        assertThat(featureFlag.getEnabled(), is(expectedValue));
     }
 
 }
