@@ -64,6 +64,7 @@ public class DataStoreService {
         this.gdcUri = URI.create(notEmpty(gdcUri, "gdcUri"));
         this.restTemplate = notNull(restTemplate, "restTemplate");
         sardine = new GdcSardine(new CustomHttpClientBuilder(httpClient));
+
     }
 
     private UriPrefixer getPrefixer() {

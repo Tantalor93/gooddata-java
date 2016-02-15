@@ -8,7 +8,13 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -79,5 +85,41 @@ public class DatastoreServiceAT extends AbstractGoodDataAT {
         file = directory + "/file.csv";
         dataStoreService.upload(file, getClass().getResourceAsStream("/person.csv"));
         assertThat(connManager.getTotalStats().getLeased(), is(equalTo(0)));
+    }
+
+    @Test(groups = "datastore", dependsOnGroups = "account")
+    public void datastoreConnectionClosedMultipleThreads() throws  Exception{
+        DataStoreService dataStoreService = gd.getDataStoreService();
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+        directory = "/" + UUID.randomUUID().toString();
+        file = directory + "/file.csv";
+        dataStoreService.upload(file, getClass().getResourceAsStream("/person.csv"));
+        List<Future> list = new ArrayList<>();
+        for(int i = 0; i < ITER_MAX; i++){
+            list.add(executorService.submit(new MyRunnable(directory+"/file"+i+".csv",dataStoreService)));
+        }
+        int inc = 0;
+        for(Future future : list){
+            future.get();
+        }
+        System.out.println(inc);
+        assertThat(connManager.getTotalStats().getLeased(), is(equalTo(0)));
+
+    }
+
+    static class MyRunnable implements Runnable{
+        String file;
+        DataStoreService dataStoreService;
+
+        MyRunnable(String file, DataStoreService dataStoreService){
+            this.file = file;
+            this.dataStoreService = dataStoreService;
+        }
+
+        @Override
+        public void run() {
+            dataStoreService.upload(file,getClass().getResourceAsStream("/person.csv"));
+        }
     }
 }

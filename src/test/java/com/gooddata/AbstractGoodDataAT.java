@@ -32,6 +32,7 @@ public abstract class AbstractGoodDataAT {
                 @Override
                 protected HttpClient createHttpClient(String login, String password, String hostname, int port, String protocol, HttpClientBuilder builder) {
                     PoolingHttpClientConnectionManager httpClientConnectionManager = new PoolingHttpClientConnectionManager();
+                    httpClientConnectionManager.setDefaultMaxPerRoute(20);
                     final HttpHost host = new HttpHost(hostname, port, protocol);
                     final HttpClient httpClient = builder.setConnectionManager(httpClientConnectionManager).build();
                     final SSTRetrievalStrategy strategy = new LoginSSTRetrievalStrategy(httpClient, host, login, password);

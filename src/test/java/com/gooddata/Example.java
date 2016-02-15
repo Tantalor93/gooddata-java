@@ -8,6 +8,10 @@ import com.gooddata.account.AccountService;
 import com.gooddata.dataset.DatasetManifest;
 import com.gooddata.dataset.DatasetService;
 import com.gooddata.gdc.DataStoreService;
+import com.gooddata.http.client.GoodDataHttpClient;
+import com.gooddata.http.client.LoginSSTRetrievalStrategy;
+import com.gooddata.http.client.SSTRetrievalStrategy;
+import com.gooddata.http.client.SimpleSSTRetrievalStrategy;
 import com.gooddata.md.Attribute;
 import com.gooddata.md.Fact;
 import com.gooddata.md.MetadataService;
@@ -27,6 +31,7 @@ import com.gooddata.report.ReportService;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
@@ -34,10 +39,14 @@ import java.util.Collection;
 import static com.gooddata.md.Restriction.identifier;
 import static java.util.Arrays.asList;
 
+import org.apache.http.HttpHost;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.pool.ConnPoolControl;
+
 public class Example {
 
-    public static void main(String... args) throws FileNotFoundException {
-        final GoodData gd = new GoodData("roman@gooddata.com", "Roman1");
+    public static void main(String... args) throws IOException {
+      /*  final GoodData gd = new GoodData("roman@gooddata.com", "Roman1");
 
 
         final AccountService accountService = gd.getAccountService();
@@ -96,6 +105,23 @@ public class Example {
         dataStoreService.delete("/dir/file.txt");
 
         gd.logout();
+        */
+        GoodData gd = new GoodData("obe-devel4.na.intgdc.com","bear@gooddata.com","jindrisska");
+//        ProjectService projectService = gd.getProjectService();
+//        DatasetService datasetService = gd.getDatasetService();
+//        Project project = projectService.getProjectById("iq3ai5qmm6wnqmwkx9azp23t8x99wkgn");
+//        DatasetManifest datasetManifest = datasetService.getDatasetManifest(project,"dataset.job");
+//        DatasetManifest datasetManifest1 = datasetService.getDatasetManifest(project,"dataset.person");
+//        datasetManifest1.setSource(Example.class.getResourceAsStream("/example1.csv"));
+//        datasetManifest.setSource(Example.class.getResourceAsStream("/example.csv"));
+//        gd.getDatasetService().loadDatasets(project,datasetManifest,datasetManifest1).get();
+//        System.out.println("a");
+        LoginSSTRetrievalStrategy loginSSTRetrievalStrategy = new LoginSSTRetrievalStrategy("bear@gooddata.com","jindrisska");
+        HttpHost httpHost = new HttpHost("obe-devel4.na.intgdc.com",443,"https");
+        GoodDataHttpClient goodDataHttpClient = new GoodDataHttpClient(httpHost,loginSSTRetrievalStrategy);
+        String sst = loginSSTRetrievalStrategy.obtainSst(HttpClientBuilder.create().build(),httpHost);
+        SimpleSSTRetrievalStrategy simpleSSTRetrievalStrategy = new SimpleSSTRetrievalStrategy(sst);
+        simpleSSTRetrievalStrategy.
     }
 
 }
