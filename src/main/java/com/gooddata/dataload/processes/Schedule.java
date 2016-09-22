@@ -42,12 +42,17 @@ public class Schedule {
     private String state;
     private String cron;
     private String timezone;
+    private Integer reschedule;
     private final DateTime nextExecutionTime;
     private final int consecutiveFailedExecutionCount;
     private final Map<String, String> params;
     private final Map<String,String> links;
 
     public Schedule(final DataloadProcess process, final String executable, final String cron) {
+        this(process, executable, cron, null);
+    }
+
+    public Schedule(final DataloadProcess process, final String executable, final String cron, final Integer reschedule) {
         notNull(process, "process");
 
         this.type = MSETL_TYPE;
@@ -60,6 +65,7 @@ public class Schedule {
         this.consecutiveFailedExecutionCount = 0;
         this.params.put(EXECUTABLE, executable);
         this.links = Collections.emptyMap();
+        this.reschedule = reschedule;
     }
 
     @JsonCreator
@@ -68,8 +74,9 @@ public class Schedule {
                      @JsonProperty("cron") final String cron,
                      @JsonProperty("timezone") final String timezone,
                      @JsonProperty("nextExecutionTime") @JsonDeserialize(using = ISODateTimeDeserializer.class) DateTime nextExecutionTime,
-                     @JsonProperty("consecutiveFailedExecutionCount") final int consecutiveFailedExecutionCount,
+                     @JsonProperty("consecutiveFailedExecutionCount") final Integer consecutiveFailedExecutionCount,
                      @JsonProperty("params") final Map<String, String> params,
+                     @JsonProperty("reschedule") final Integer reschedule,
                      @JsonProperty("links") final Map<String, String> links) {
         this.type = type;
         this.state = state;
@@ -78,6 +85,7 @@ public class Schedule {
         this.nextExecutionTime = nextExecutionTime;
         this.consecutiveFailedExecutionCount = consecutiveFailedExecutionCount;
         this.params = params;
+        this.reschedule = reschedule;
         this.links = links;
     }
 
@@ -153,6 +161,14 @@ public class Schedule {
 
     public void setTimezone(final String timezone) {
         this.timezone = timezone;
+    }
+
+    public Integer getReschedule() {
+        return reschedule;
+    }
+
+    public void setReschedule(Integer reschedule) {
+        this.reschedule = notNull(reschedule, "reschedule");
     }
 
     @JsonIgnore

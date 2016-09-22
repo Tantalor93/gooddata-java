@@ -18,6 +18,7 @@ import static java.nio.file.Files.createTempDirectory;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -59,6 +60,16 @@ public class ProcessServiceAT extends AbstractGoodDataAT {
         } finally {
             FileUtils.deleteDirectory(dir);
         }
+    }
+
+    @Test(groups = "process", dependsOnMethods = "createProcess")
+    public void createProcessScheduleWithReschedule() {
+        final Schedule schedule = gd.getProcessService().createSchedule(project, new Schedule(process, "sdktest.grf", "0 0 * * *", 15));
+        assertThat(gd.getProcessService().getScheduleById(project, schedule.getId()).getReschedule(), is(equalTo(15)));
+        schedule.setReschedule(26);
+        gd.getProcessService().updateSchedule(project, schedule);
+        assertThat(gd.getProcessService().getScheduleById(project, schedule.getId()).getReschedule(), is(equalTo(26)));
+
     }
 
     @Test(groups = "process", dependsOnGroups = "project")
@@ -115,5 +126,4 @@ public class ProcessServiceAT extends AbstractGoodDataAT {
         final Collection<DataloadProcess> processes = gd.getProcessService().listProcesses(project);
         assertThat(processes, not(hasItems(hasSameIdAs(process), hasSameIdAs(processAppstore))));
     }
-
 }

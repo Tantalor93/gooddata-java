@@ -51,6 +51,7 @@ public class ScheduleTest {
         assertThat(schedule.isEnabled(), is(true));
         assertThat(schedule.getCron(), is("0 0 * * *"));
         assertThat(schedule.getTimezone(), is("UTC"));
+        assertThat(schedule.getReschedule(), is(26));
         assertThat(schedule.getConsecutiveFailedExecutionCount(), is(0));
         assertThat(schedule.getProcessId(), is("process_id"));
         assertThat(schedule.getExecutable(), is(EXECUTABLE));
@@ -62,6 +63,9 @@ public class ScheduleTest {
     public void testSerialization() {
         final Schedule schedule = new Schedule(process, EXECUTABLE, "0 0 * * *");
         assertThat(schedule, serializesToJson("/dataload/processes/schedule-input.json"));
+        final Schedule scheduleWithReschedule = new Schedule(process, EXECUTABLE, "0 0 * * *", 26);
+        assertThat(scheduleWithReschedule, serializesToJson("/dataload/processes/schedule-with-reschedule.json"));
+
     }
 
     @DataProvider(name = "scheduleParams")
