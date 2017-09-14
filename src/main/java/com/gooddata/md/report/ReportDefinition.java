@@ -79,6 +79,10 @@ public class ReportDefinition extends AbstractObj implements Queryable, Updatabl
         return notNullState(links, "links").get(EXPLAIN_LINK);
     }
 
+    public String getUri() {
+        return meta.getUri();
+    }
+
     @Override
     public String toString() {
         return GoodDataToStringBuilder.defaultToString(this);
